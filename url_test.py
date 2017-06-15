@@ -28,4 +28,4 @@ def status():
 
 while True:
     status()
-    time.sleep(15)
+    time.sleep(10)
