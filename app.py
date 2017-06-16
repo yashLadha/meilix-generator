@@ -66,10 +66,10 @@ def output():
                  shell=True,
                  universal_newlines=True,
                  )
-        while True:
-            time.sleep(1)
-            with open("log", 'r') as f:
-                yield f.readline() + '<br/>\n'
+        #while True:
+        #    time.sleep(1)
+        #    with open("log", 'r') as f:
+        #        yield f.readline() + '<br/>\n'
 
     return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
 
