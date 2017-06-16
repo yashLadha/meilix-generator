@@ -12,18 +12,18 @@ def status():
     tag = os.environ["TRAVIS_TAG"]
     date = datetime.datetime.now().strftime('%Y%m%d')
     url = "https://github.com/xeon-zolt/meilix/releases/download/"+tag+"/meilix-zesty-"+date+"-i386.iso"
+    f = open("log", "w+")
     try:
         req = requests.head(url)
         if req.status_code == 200:
-            print('Build Sucessfull')
-            print(url)
+            print('Sucess')
         elif req.status_code == 404:
-            print('ISO is Building')
+            f.write('ISO is Building\n')
         else:
             print('Unable to reach to server')
     except requests.ConnectionError:
         print('Failed To Connect')
-    sys.stdout.flush()
+    f.close()
 
 
 while True:

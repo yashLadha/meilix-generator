@@ -58,7 +58,16 @@ def output():
 
 		for line in iter(proc.stdout.readline,''):
 			time.sleep(1)  # Don't need this just shows the text streaming
-			yield line.rstrip() + '<br/>\n'
+                        yield line.rstrip() + '<br/>\n'
+                proc = subprocess.Popen(
+                            ['./url_script.sh'],
+                            shell=True,
+                            universal_newlines=True,
+                        )
+                while True:
+                    time.sleep(1)
+                    with open("log", 'r') as f:
+                        yield f.readline() + '<br/>\n'
 
 	return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
 
@@ -85,4 +94,6 @@ def application_error(e):
 
 
 if __name__ == '__main__':
+        f = open("log", 'w+')
+        f.close()
 	app.run()
