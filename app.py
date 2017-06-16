@@ -71,7 +71,7 @@ def output():
             with open("log", 'r') as f:
                 yield f.readline() + '<br/>\n'
 
-        return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
+    return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
 
 #Function to call meilix script on clicking the build button
 
