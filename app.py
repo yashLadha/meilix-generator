@@ -16,11 +16,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 def allowed_file(filename):
-	return '.' in filename and \
-			filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def urlify(s):
-     # Remove all non-word characters (everything except numbers and letters)
+    # Remove all non-word characters (everything except numbers and letters)
      s = re.sub(r"[^\w\s]", '', s).strip()
      # Replace all runs of whitespace with a single dash
      s = re.sub(r"\s+", '-', s)
@@ -28,72 +28,74 @@ def urlify(s):
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-	if request.method == 'POST':
-		email = request.form['email']
-		TRAVIS_TAG = request.form['TRAVIS_TAG']
-		file = request.files['file']
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			os.rename(UPLOAD_FOLDER + filename, UPLOAD_FOLDER+'wallpaper')
-			filename = 'wallpaper'
-			if email != '' and TRAVIS_TAG != '':
-				os.environ["email"] = email
-				TRAVIS_TAG = urlify(TRAVIS_TAG)#this will fix url issue
-				os.environ["TRAVIS_TAG"] = TRAVIS_TAG
-				return redirect(url_for('output'))
-	return render_template('index.html')
+    if request.method == 'POST':
+        email = request.form['email']
+        TRAVIS_TAG = request.form['TRAVIS_TAG']
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            os.rename(UPLOAD_FOLDER + filename, UPLOAD_FOLDER+'wallpaper')
+            filename = 'wallpaper'
+            if email != '' and TRAVIS_TAG != '':
+                os.environ["email"] = email
+                TRAVIS_TAG = urlify(TRAVIS_TAG)#this will fix url issue
+                os.environ["TRAVIS_TAG"] = TRAVIS_TAG
+                return redirect(url_for('output'))
+    return render_template('index.html')
 
 @app.route('/yield')
 def output():
-	def inner():
-		proc = subprocess.Popen(
+    def inner():
+        proc = subprocess.Popen(
 
-			['./script.sh'],             #call something with a lot of output so we can see it
+                ['./script.sh'],             #call something with a lot of output so we can see it
 
-			shell=True,universal_newlines=True,
-			stdout=subprocess.PIPE,
-                        bufsize=1
-		)
+                shell=True,universal_newlines=True,
+                stdout=subprocess.PIPE,
+                bufsize=1
+                )
 
-		for line in iter(proc.stdout.readline,''):
-			time.sleep(1)  # Don't need this just shows the text streaming
-                        yield line.rstrip() + '<br/>\n'
-                proc = subprocess.Popen(
-                            ['./url_script.sh'],
-                            shell=True,
-                            universal_newlines=True,
-                        )
-                while True:
-                    time.sleep(1)
-                    with open("log", 'r') as f:
-                        yield f.readline() + '<br/>\n'
+        for line in iter(proc.stdout.readline,''):
+            time.sleep(1)  # Don't need this just shows the text streaming
+            yield line.rstrip() + '<br/>\n'
+        proc = subprocess.Popen(
 
-	return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
+                 ['./url_script.sh'],
+
+                 shell=True,
+                 universal_newlines=True,
+                 )
+        while True:
+            time.sleep(1)
+            with open("log", 'r') as f:
+                yield f.readline() + '<br/>\n'
+
+        return Response(inner(), mimetype='text/html')  # text/html is required for most browsers to show th$
 
 #Function to call meilix script on clicking the build button
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-	return send_from_directory(app.config['UPLOAD_FOLDER'],filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'],filename)
 
 @app.route('/about')
 def about():
-	#About page
-	return render_template("about.html")
+    #About page
+    return render_template("about.html")
 
 #Return a custom 404 error.
 @app.errorhandler(404)
 def page_not_found(e):
-	return 'Sorry, unexpected error: {}'.format(e), 404
+    return 'Sorry, unexpected error: {}'.format(e), 404
 
 @app.errorhandler(500)
 def application_error(e):
-	#Return a custom 500 error.
-	return 'Sorry, unexpected error: {}'.format(e), 500
+    #Return a custom 500 error.
+    return 'Sorry, unexpected error: {}'.format(e), 500
 
 
 if __name__ == '__main__':
-        f = open("log", 'w+')
-        f.close()
-	app.run()
+    f = open("log", 'w+')
+    f.close()
+    app.run()
