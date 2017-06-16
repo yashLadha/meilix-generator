@@ -61,7 +61,7 @@ def output():
             yield line.rstrip() + '<br/>\n'
         proc = subprocess.Popen(
 
-                 ['./url_script.sh'],
+                 ['./url_test.py'],
 
                  shell=True,
                  universal_newlines=True,
