@@ -61,9 +61,10 @@ def output():
             yield line.rstrip() + '<br/>\n'
 
         while True:
-            time.sleep(1)
+            time.sleep(15)
             import url_test
-            stat = url_test.status()
+            stat = url_test.status_2()
+            print(stat)
             if stat == 200:
                 yield 'Iso Build <br/>\n'
                 break
